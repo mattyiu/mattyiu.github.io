@@ -7,21 +7,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-
   <style>
-    /* ─── TOKENS ─────────────────────────────────────────────── */
     :root {
-      --cream:   #F0EDE4;
-      --ink:     #111111;
+      --cream: #F0EDE4;
+      --ink: #111111;
       --ink-mid: #555555;
       --ink-light: #999999;
       --grid-line: rgba(0,0,0,0.07);
       --pill-border: rgba(0,0,0,0.25);
-      --accent:  #111111;
-      --gap: clamp(1.5rem, 4vw, 3rem);
     }
-
-    /* ─── RESET ──────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
@@ -32,1029 +26,806 @@
       font-weight: 300;
       font-size: 15px;
       line-height: 1.65;
-      min-height: 100vh;
-      /* Grid paper background */
-      background-image:
-        linear-gradient(var(--grid-line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-      background-size: 40px 40px;
+      overflow-x: hidden;
+      cursor: none;
     }
+    a, button { cursor: none !important; }
 
-    /* ─── LAYOUT ─────────────────────────────────────────────── */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 clamp(1.25rem, 5vw, 4rem);
-    }
-
-    /* ─── NAV ────────────────────────────────────────────────── */
-    nav {
+    /* Canvas fixed to viewport */
+    #grid-canvas {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.25rem clamp(1.25rem, 5vw, 4rem);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(240,237,228,0.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--grid-line);
-    }
-
-    .nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      text-decoration: none;
-      color: var(--ink);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink-mid);
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--ink); }
-
-    /* ─── HERO ───────────────────────────────────────────────── */
-    .hero {
-      padding-top: 9rem;
-      padding-bottom: 5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Corner + markers like the PDF */
-    .cross {
-      position: absolute;
-      width: 16px; height: 16px;
-      color: var(--ink);
-      opacity: 0.4;
-      font-size: 1rem;
-      line-height: 1;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       pointer-events: none;
-      user-select: none;
+      z-index: -1;
     }
-    .cross::before { content: '+'; }
-    .cross-tl { top: 5rem; left: clamp(1.25rem,5vw,4rem); }
-    .cross-tr { top: 5rem; right: clamp(1.25rem,5vw,4rem); }
-    .cross-bl { bottom: 2rem; left: clamp(1.25rem,5vw,4rem); }
-    .cross-br { bottom: 2rem; right: clamp(1.25rem,5vw,4rem); }
 
+    #hero-section, .below-fold { position: relative; z-index: 1; }
+
+    /* Hero */
+    #hero-section {
+      height: 100vh; min-height: 600px;
+      display: flex; align-items: center;
+    }
+    .hero-content {
+      padding: 0 clamp(1.25rem, 5vw, 4rem);
+      max-width: 1200px; margin: 0 auto; width: 100%;
+    }
     .hero-eyebrow {
-      font-size: 0.75rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 0.75rem;
+      font-size: 0.75rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ink-mid); margin-bottom: 0.75rem;
     }
-
     .hero-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(4rem, 11vw, 9rem);
-      font-weight: 300;
-      line-height: 0.92;
-      letter-spacing: -0.02em;
-      margin-bottom: 2.5rem;
+      font-weight: 300; line-height: 0.92;
+      letter-spacing: -0.02em; margin-bottom: 2.5rem;
     }
-
-    .hero-title em {
-      font-style: italic;
-      font-weight: 300;
-    }
-
+    .hero-title em { font-style: italic; font-weight: 300; }
     .hero-sub {
-      max-width: 480px;
-      color: var(--ink-mid);
-      font-size: 0.9rem;
-      line-height: 1.75;
-      margin-bottom: 2.5rem;
+      max-width: 480px; color: var(--ink-mid);
+      font-size: 0.9rem; line-height: 1.75; margin-bottom: 2.5rem;
+    }
+    .hero-contact { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--ink-light); font-size: 0.65rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      animation: bobScroll 2.5s ease-in-out infinite;
+    }
+    .scroll-hint::after {
+      content: ''; display: block; width: 1px; height: 40px;
+      background: var(--ink-light);
+      animation: growLine 2.5s ease-in-out infinite;
+    }
+    @keyframes bobScroll {
+      0%,100% { opacity:0.4; transform:translateX(-50%) translateY(0); }
+      50% { opacity:0.9; transform:translateX(-50%) translateY(6px); }
+    }
+    @keyframes growLine {
+      0%,100% { transform:scaleY(0.4); transform-origin:top; }
+      50% { transform:scaleY(1); transform-origin:top; }
     }
 
-    .hero-contact {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+    /* Crosses — fixed, always behind content */
+    .cross-mark {
+      position: fixed; z-index: 0;
+      font-size: 1.5rem; font-family: 'Inter', sans-serif; font-weight: 300;
+      color: var(--ink); opacity: 0.4;
+      pointer-events: none; user-select: none;
+      width: 1em; height: 1em;
+      display: flex; align-items: center; justify-content: center;
+      will-change: transform; transform: translate(-50%, -50%);
     }
+    .cross-mark::before { content: '+'; }
+
+    .below-fold { background: transparent; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1.25rem, 5vw, 4rem); }
 
     .pill {
-      display: inline-block;
-      padding: 0.45rem 1.1rem;
-      border: 1px solid var(--pill-border);
-      border-radius: 999px;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
+      display: inline-block; padding: 0.45rem 1.1rem;
+      border: 1px solid var(--pill-border); border-radius: 999px;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; color: var(--ink);
       transition: background 0.2s, color 0.2s;
     }
-    .pill:hover {
-      background: var(--ink);
-      color: var(--cream);
-      border-color: var(--ink);
-    }
+    .pill:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 
-    /* ─── SECTION HEADER ─────────────────────────────────────── */
     .section-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      border-top: 1px solid var(--ink);
-      padding-top: 1rem;
-      margin-bottom: 2.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
+      display: flex; align-items: baseline; justify-content: space-between;
+      border-top: 1px solid var(--ink); padding-top: 1rem;
+      margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
     }
-
     .section-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 300;
-      letter-spacing: -0.01em;
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 300; letter-spacing: -0.01em;
     }
 
-    /* ─── FILTER BAR ─────────────────────────────────────────── */
-    .filter-bar {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
+    .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .filter-btn {
-      padding: 0.4rem 1rem;
-      border: 1px solid var(--pill-border);
-      border-radius: 999px;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: transparent;
-      color: var(--ink-mid);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
+      padding: 0.4rem 1rem; border: 1px solid var(--pill-border); border-radius: 999px;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: transparent; color: var(--ink-mid); cursor: none;
+      transition: all 0.2s; font-family: 'Inter', sans-serif;
     }
-    .filter-btn:hover,
-    .filter-btn.active {
-      background: var(--ink);
-      color: var(--cream);
-      border-color: var(--ink);
-    }
+    .filter-btn:hover, .filter-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 
-    /* ─── PROJECT GRID ───────────────────────────────────────── */
     .works { padding: 5rem 0; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.5rem;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
 
     .card {
-      position: relative;
-      background: rgba(255,255,255,0.25);
-      border: 1px solid rgba(0,0,0,0.1);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-      display: block;
+      position: relative; background: rgba(240,237,228,0.85);
+      border: 1px solid rgba(0,0,0,0.1); overflow: hidden; cursor: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease;
+      text-decoration: none; color: inherit; display: block;
     }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+    .card--wide { grid-column: span 2; }
+    @media (max-width: 780px) { .card--wide { grid-column: span 1; } }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    }
-
-    /* Card that spans 2 cols on large screens */
-    .card--wide {
-      grid-column: span 2;
-    }
-    @media (max-width: 780px) {
-      .card--wide { grid-column: span 1; }
-    }
-
-    .card-thumb {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-      display: block;
-      background: #ddd;
-      transition: transform 0.5s ease;
-    }
+    .card-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:#ddd; transition:transform 0.5s ease; }
     .card:hover .card-thumb { transform: scale(1.03); }
-
-    /* Placeholder thumb when no image */
     .card-thumb-placeholder {
-      width: 100%;
-      aspect-ratio: 16/9;
+      width:100%; aspect-ratio:16/9;
       background: linear-gradient(135deg, #e8e4da 0%, #d4cfc4 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display:flex; align-items:center; justify-content:center;
     }
-
     .card-thumb-placeholder .placeholder-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 300;
-      letter-spacing: -0.02em;
-      color: rgba(0,0,0,0.25);
-      text-align: center;
-      padding: 1rem;
+      font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,5vw,3.5rem);
+      font-weight:300; letter-spacing:-0.02em; color:rgba(0,0,0,0.25); text-align:center; padding:1rem;
     }
+    .card-body { padding: 1.25rem 1.5rem 1.5rem; }
+    .card-category { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-light); margin-bottom:0.4rem; }
+    .card-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:400; line-height:1.1; margin-bottom:0.6rem; }
+    .card-desc { font-size:0.82rem; color:var(--ink-mid); line-height:1.6; margin-bottom:1rem; }
+    .card-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
+    .tag { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.75rem; border:1px solid var(--pill-border); border-radius:999px; color:var(--ink-mid); }
+    .card[data-hidden="true"] { opacity:0; pointer-events:none; position:absolute; visibility:hidden; }
 
-    .card-body {
-      padding: 1.25rem 1.5rem 1.5rem;
-    }
-
-    .card-category {
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.4rem;
-    }
-
-    .card-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      line-height: 1.1;
-      margin-bottom: 0.6rem;
-    }
-
-    .card-desc {
-      font-size: 0.82rem;
-      color: var(--ink-mid);
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .tag {
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.3rem 0.75rem;
-      border: 1px solid var(--pill-border);
-      border-radius: 999px;
-      color: var(--ink-mid);
-    }
-
-    /* Hidden class for filtering */
-    .card[data-hidden="true"] {
-      display: none;
-    }
-
-    /* ─── PROJECT PAGE (MODAL) ───────────────────────────────── */
+    /* Modal */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: rgba(240,237,228,0.96);
-      backdrop-filter: blur(4px);
-      overflow-y: auto;
-      opacity: 0;
-      pointer-events: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(240,237,228,0.97); backdrop-filter: blur(4px);
+      overflow-y: auto; opacity: 0; pointer-events: none;
       transition: opacity 0.35s ease;
       background-image:
         linear-gradient(var(--grid-line) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
       background-size: 40px 40px;
     }
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal-inner { max-width:1000px; margin:0 auto; padding:clamp(2rem,6vw,5rem) clamp(1.25rem,5vw,4rem) 5rem; }
 
-    .modal-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: clamp(2rem,6vw,5rem) clamp(1.25rem,5vw,4rem) 5rem;
+    /* Three-column modal nav */
+    .modal-nav {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; margin-bottom: 2.5rem; gap: 1rem;
     }
-
+    .modal-prev, .modal-next {
+      font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--ink-mid); cursor:none; background:none; border:none;
+      padding:0; transition:color 0.2s; font-family:'Inter',sans-serif;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .modal-prev { justify-self: start; }
+    .modal-prev::before { content:'←'; }
+    .modal-next { justify-self: end; }
+    .modal-next::after { content:'→'; }
+    .modal-prev:hover, .modal-next:hover { color: var(--ink); }
     .modal-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      margin-bottom: 2.5rem;
-      transition: color 0.2s;
-      font-family: 'Inter', sans-serif;
+      justify-self: center; font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--ink-light); cursor:none; background:none; border:none;
+      padding:0; transition:color 0.2s; font-family:'Inter',sans-serif;
     }
-    .modal-back:hover { color: var(--ink); }
-    .modal-back::before { content: '←'; font-size: 1rem; }
+    .modal-back:hover { color:var(--ink-mid); }
 
-    .modal-eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 0.6rem;
+    .modal-eyebrow { font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mid); margin-bottom:0.6rem; }
+    .modal-title { font-family:'Cormorant Garamond',serif; font-size:clamp(3rem,9vw,7rem); font-weight:300; line-height:0.92; letter-spacing:-0.02em; margin-bottom:2rem; }
+    .modal-title em { font-style:italic; }
+    .modal-tags { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:3rem; }
+    .modal-meta { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1.5rem; border-top:1px solid rgba(0,0,0,0.15); border-bottom:1px solid rgba(0,0,0,0.15); padding:1.5rem 0; margin-bottom:3rem; }
+    .modal-meta-item label { display:block; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-light); margin-bottom:0.3rem; }
+    .modal-meta-item span { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; }
+    .modal-body { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-bottom:3rem; }
+    @media (max-width:680px) { .modal-body { grid-template-columns:1fr; } }
+    .modal-body p { color:var(--ink-mid); font-size:0.9rem; line-height:1.8; }
+    .modal-body p + p { margin-top:1rem; }
+    .modal-embed-wrap { position:relative; width:100%; padding-bottom:66%; margin-bottom:2rem; border:1px solid rgba(0,0,0,0.1); overflow:hidden; }
+    .modal-embed-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
+    .embed-label { font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mid); margin-bottom:0.75rem; }
+
+    /* Figma fullscreen */
+    .figma-wrap { position: relative; margin-bottom: 2rem; }
+    .figma-fs-btn {
+      position: absolute; top: 0.6rem; right: 0.6rem; z-index: 10;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(17,17,17,0.3); border-radius: 999px;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: rgba(240,237,228,0.9); color: var(--ink);
+      cursor: none; font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
     }
-
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3rem, 9vw, 7rem);
-      font-weight: 300;
-      line-height: 0.92;
-      letter-spacing: -0.02em;
-      margin-bottom: 2rem;
+    .figma-fs-btn:hover { background: var(--ink); color: var(--cream); }
+    .figma-wrap.fullscreen {
+      position: fixed; inset: 0; z-index: 500;
+      margin: 0; padding: 0;
+      background: var(--cream);
     }
-
-    .modal-title em { font-style: italic; }
-
-    .modal-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 3rem;
+    .figma-wrap.fullscreen .modal-embed-wrap {
+      position: absolute; inset: 0;
+      padding-bottom: 0; height: 100%;
     }
+    .about-inner { display:grid; grid-template-columns:1fr 1.6fr; gap:4rem; align-items:start; }
+    @media (max-width:680px) { .about-inner { grid-template-columns:1fr; gap:2rem; } }
+    .about-title { font-family:'Cormorant Garamond',serif; font-size:clamp(3rem,7vw,5.5rem); font-weight:300; line-height:0.95; letter-spacing:-0.02em; }
+    .about-title em { font-style:italic; }
+    .about-text { color:var(--ink-mid); font-size:0.9rem; line-height:1.8; }
+    .about-text p + p { margin-top:1rem; }
+    .about-links { display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1.75rem; }
 
-    .modal-meta {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1.5rem;
-      border-top: 1px solid rgba(0,0,0,0.15);
-      border-bottom: 1px solid rgba(0,0,0,0.15);
-      padding: 1.5rem 0;
-      margin-bottom: 3rem;
-    }
-
-    .modal-meta-item label {
-      display: block;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 0.3rem;
-    }
-
-    .modal-meta-item span {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      font-weight: 400;
-    }
-
-    .modal-body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      margin-bottom: 3rem;
-    }
-
-    @media (max-width: 680px) {
-      .modal-body { grid-template-columns: 1fr; }
-    }
-
-    .modal-body p {
-      color: var(--ink-mid);
-      font-size: 0.9rem;
-      line-height: 1.8;
-    }
-
-    .modal-body p + p { margin-top: 1rem; }
-
-    .modal-images {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .modal-img {
-      width: 100%;
-      display: block;
-      object-fit: cover;
-    }
-
-    .modal-img-full {
-      width: 100%;
-      display: block;
-      margin-bottom: 1rem;
-    }
-
-    .modal-embed-wrap {
-      position: relative;
-      width: 100%;
-      padding-bottom: 66%;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-
-    .modal-embed-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .embed-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      margin-bottom: 0.75rem;
-    }
-
-    /* ─── ABOUT SECTION ──────────────────────────────────────── */
-    .about {
-      padding: 5rem 0;
-      border-top: 1px solid var(--grid-line);
-    }
-
-    .about-inner {
-      display: grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap: 4rem;
-      align-items: start;
-    }
-
-    @media (max-width: 680px) {
-      .about-inner { grid-template-columns: 1fr; gap: 2rem; }
-    }
-
-    .about-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3rem, 7vw, 5.5rem);
-      font-weight: 300;
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-    }
-
-    .about-title em { font-style: italic; }
-
-    .about-text {
-      color: var(--ink-mid);
-      font-size: 0.9rem;
-      line-height: 1.8;
-    }
-
-    .about-text p + p { margin-top: 1rem; }
-
-    .about-links {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-top: 1.75rem;
-    }
-
-    /* ─── FOOTER ─────────────────────────────────────────────── */
     footer {
-      border-top: 1px solid var(--grid-line);
-      padding: 2rem clamp(1.25rem,5vw,4rem);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      border-top:1px solid var(--grid-line);
+      padding:1.5rem clamp(1.25rem,5vw,4rem);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:1rem;
     }
+    footer p { font-size:0.75rem; color:var(--ink-light); letter-spacing:0.05em; }
 
-    footer p {
-      font-size: 0.75rem;
-      color: var(--ink-light);
-      letter-spacing: 0.05em;
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* Typewriter cursor */
+    .type-cursor {
+      display:inline-block; width:2px; height:0.85em;
+      background:var(--ink); margin-left:2px; vertical-align:middle;
+      animation:cursorBlink 0.7s steps(1) infinite;
     }
+    @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    /* ─── SCROLL REVEAL ──────────────────────────────────────── */
-    .reveal {
+    /* Cursor ring — morphs into pill */
+    #cursor-ring {
+      position: fixed; top:0; left:0;
+      height: 32px; width: 32px;
+      border: 1px solid rgba(17,17,17,0.4);
+      border-radius: 999px;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; white-space: nowrap;
+      background: transparent;
+      /* Width animates smoothly, height stays fixed */
+      transition: opacity 0.3s,
+                  width 0.4s cubic-bezier(0.34,1.15,0.64,1),
+                  background 0.3s,
+                  border-color 0.3s;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: none;
+    #cursor-ring .ring-text {
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Inter', sans-serif; color: var(--ink);
+      opacity: 0; transition: opacity 0.15s ease;
+      pointer-events: none; user-select: none;
+      padding: 0 0.6rem;
     }
-
-    /* ─── RESPONSIVE NAV ─────────────────────────────────────── */
-    @media (max-width: 540px) {
-      .nav-links { display: none; }
+    #cursor-ring.pill-active {
+      background: rgba(240,237,228,0.95);
+      border-color: rgba(17,17,17,0.55);
+      backdrop-filter: blur(6px);
+    }
+    #cursor-ring.pill-active .ring-text { opacity: 1; transition-delay: 0.18s; }
+    @media (max-width: 768px) {
+      body { cursor: auto; }
+      a, button { cursor: auto !important; }
+      #cursor-ring { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAVIGATION ── -->
-  <nav>
-    <a class="nav-logo" href="#top">Matt Yiu.</a>
-    <ul class="nav-links">
-      <li><a href="#works">Works</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="mailto:matt.shujuku.yiu@gmail.com">Contact</a></li>
-    </ul>
-  </nav>
+  <canvas id="grid-canvas"></canvas>
 
-  <!-- ── HERO ── -->
-  <section class="hero container" id="top">
-    <span class="cross cross-tl"></span>
-    <span class="cross cross-tr"></span>
-    <span class="cross cross-bl"></span>
-    <span class="cross cross-br"></span>
+  <!-- Crosses — hidden on mobile via CSS -->
+  <span class="cross-mark" style="top:14%;left:5%;"></span>
+  <span class="cross-mark" style="top:10%;right:7%;"></span>
+  <span class="cross-mark" style="top:55%;left:3%;"></span>
+  <span class="cross-mark" style="top:62%;right:5%;"></span>
 
-    <p class="hero-eyebrow">3D Artist &amp; UX/UI Designer</p>
-    <h1 class="hero-title">
-      Matt<br><em>Yiu.</em>
-    </h1>
-    <p class="hero-sub">
-      Crafting worlds in 3D and designing experiences people enjoy using.
-      Based in Melbourne, Australia.
-    </p>
-    <div class="hero-contact">
-      <a class="pill" href="mailto:matt.shujuku.yiu@gmail.com">matt.shujuku.yiu@gmail.com</a>
-      <a class="pill" href="https://www.instagram.com/inkcider/" target="_blank" rel="noopener">Instagram</a>
-      <a class="pill" href="https://www.linkedin.com/in/matthew-yiu-676995152/" target="_blank" rel="noopener">LinkedIn</a>
+  <!-- Single cursor ring that morphs into a pill -->
+  <div id="cursor-ring"><span class="ring-text" id="ring-text"></span></div>
+
+  <section id="hero-section">
+    <div class="hero-content" id="hero-parallax">
+      <p class="hero-eyebrow">3D Artist &amp; UX/UI Designer</p>
+      <h1 class="hero-title" id="hero-title-el" aria-label="Matt Yiu."></h1>
+      <p class="hero-sub">Crafting worlds in 3D and designing experiences people enjoy using. Based in Melbourne, Australia.</p>
+      <div class="hero-contact">
+        <a class="pill" href="#works">Works</a>
+        <a class="pill" href="#about">About</a>
+        <a class="pill" href="mailto:matt.shujuku.yiu@gmail.com">Contact</a>
+      </div>
     </div>
+    <div class="scroll-hint">Scroll</div>
   </section>
 
-  <!-- ── WORKS ── -->
-  <section class="works" id="works">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title reveal">Selected Works.</h2>
-        <div class="filter-bar reveal">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="3d">3D Art</button>
-          <button class="filter-btn" data-filter="uxui">UX / UI</button>
-          <button class="filter-btn" data-filter="graphic">Graphic Design</button>
+  <div class="below-fold">
+    <section class="works" id="works">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title reveal">Selected Works.</h2>
+          <div class="filter-bar reveal">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="3d">3D Art</button>
+            <button class="filter-btn" data-filter="uxui">UX / UI</button>
+            <button class="filter-btn" data-filter="graphic">Graphic Design</button>
+          </div>
+        </div>
+        <div class="grid" id="project-grid">
+
+          <a class="card card--wide reveal" data-category="3d" data-project="cosy-room" href="#" onclick="openProject('cosy-room');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Cosy<br>Room.</div></div>
+            <div class="card-body">
+              <p class="card-category">3D Art</p><h3 class="card-title">Cosy Room.</h3>
+              <p class="card-desc">A hyper-detailed bedroom environment in Unreal Engine 5 — game-optimised assets and character-driven storytelling through props.</p>
+              <div class="card-tags"><span class="tag">Maya</span><span class="tag">ZBrush</span><span class="tag">Unreal Engine 5</span><span class="tag">Substance Painter</span><span class="tag">Marmoset Toolbag 4</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="3d" data-project="kingsley-express" href="#" onclick="openProject('kingsley-express');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Kingsley<br>Express.</div></div>
+            <div class="card-body">
+              <p class="card-category">3D Art</p><h3 class="card-title">Kingsley Express.</h3>
+              <p class="card-desc">A luxurious game-ready train carriage interior — grounded fantasy, warm lighting, bespoke props optimised for Unreal Engine 4.</p>
+              <div class="card-tags"><span class="tag">Maya</span><span class="tag">UE4</span><span class="tag">Marvellous Designer</span><span class="tag">ZBrush</span><span class="tag">Quixel</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="3d" data-project="japanese-alley" href="#" onclick="openProject('japanese-alley');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Japanese<br>Alley Slice.</div></div>
+            <div class="card-body">
+              <p class="card-category">3D Art</p><h3 class="card-title">Japanese Alley Slice.</h3>
+              <p class="card-desc">A dense vertical slice of a Japanese alley — a ramen shop diorama with meticulous prop work and reference-based texturing.</p>
+              <div class="card-tags"><span class="tag">Maya</span><span class="tag">RenderMan</span><span class="tag">ZBrush</span><span class="tag">Quixel</span><span class="tag">Marvellous Designer</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="3d" data-project="still-life" href="#" onclick="openProject('still-life');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Still<br>Life.</div></div>
+            <div class="card-body">
+              <p class="card-category">3D Art</p><h3 class="card-title">Still Life.</h3>
+              <p class="card-desc">A photo-replication challenge — hard surface and organic objects modelled in Maya and rendered with Pixar's RenderMan.</p>
+              <div class="card-tags"><span class="tag">Maya</span><span class="tag">RenderMan</span><span class="tag">Quixel</span><span class="tag">Photoshop</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="uxui" data-project="gotcha" href="#" onclick="openProject('gotcha');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Gotcha.</div></div>
+            <div class="card-body">
+              <p class="card-category">UX / UI Design</p><h3 class="card-title">Gotcha.</h3>
+              <p class="card-desc">A 5-week UX sprint designing a web app for a bubble tea store — from guerilla research to a clickable Figma prototype.</p>
+              <div class="card-tags"><span class="tag">Figma</span><span class="tag">Miro</span><span class="tag">Google Forms</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="graphic" data-project="neko" href="#" onclick="openProject('neko');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Neko<br>Cat Hotel.</div></div>
+            <div class="card-body">
+              <p class="card-category">Graphic Design</p><h3 class="card-title">Neko Cat Hotel.</h3>
+              <p class="card-desc">UX/UI design for a cat hotel booking experience — warm, approachable, built around pet-owner anxieties.</p>
+              <div class="card-tags"><span class="tag">Figma</span><span class="tag">Miro</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="uxui" data-project="io-energy" href="#" onclick="openProject('io-energy');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">iO<br>Energy.</div></div>
+            <div class="card-body">
+              <p class="card-category">UX / UI Design</p><h3 class="card-title">iO Energy.</h3>
+              <p class="card-desc">App design for an energy management platform, bringing clarity to complex household energy data.</p>
+              <div class="card-tags"><span class="tag">Figma</span><span class="tag">Miro</span></div>
+            </div>
+          </a>
+
+          <a class="card reveal" data-category="graphic" data-project="mermade" href="#" onclick="openProject('mermade');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Mermade<br>Hair.</div></div>
+            <div class="card-body">
+              <p class="card-category">Graphic Design</p><h3 class="card-title">Mermade Hair Pitch Deck.</h3>
+              <p class="card-desc">A visual pitch deck concept for Mermade Hair — brand-forward design with editorial photography integration.</p>
+              <div class="card-tags"><span class="tag">Photoshop</span><span class="tag">Illustrator</span></div>
+            </div>
+          </a>
+
+
+          <a class="card reveal" data-category="graphic" data-project="fine-china" href="#" onclick="openProject('fine-china');return false;">
+            <div class="card-thumb-placeholder"><div class="placeholder-title">Fine<br>China.</div></div>
+            <div class="card-body">
+              <p class="card-category">Graphic Design</p><h3 class="card-title">Fine China.</h3>
+              <p class="card-desc">Brand identity and menu design for a family-owned Chinese takeout store — a visual identity built around authenticity and handcrafted dishes.</p>
+              <div class="card-tags"><span class="tag">Illustrator</span><span class="tag">Photoshop</span><span class="tag">InDesign</span></div>
+            </div>
+          </a>
+
         </div>
       </div>
+    </section>
 
-      <div class="grid" id="project-grid">
-
-        <!-- PROJECT: Cosy Room (3D) - featured wide -->
-        <a class="card card--wide reveal" data-category="3d" data-project="cosy-room" href="#" onclick="openProject('cosy-room');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Cosy<br>Room.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">3D Art</p>
-            <h3 class="card-title">Cosy Room.</h3>
-            <p class="card-desc">A hyper-detailed bedroom environment built in Unreal Engine 5, recreating a cosy nook with game-optimised assets and character-driven storytelling through props.</p>
-            <div class="card-tags">
-              <span class="tag">Maya</span><span class="tag">ZBrush</span><span class="tag">Unreal Engine 5</span>
-              <span class="tag">Substance Painter</span><span class="tag">Marmoset Toolbag 4</span>
+    <section class="about" id="about">
+      <div class="container">
+        <div class="about-inner">
+          <div><h2 class="about-title reveal">About<br><em>Me.</em></h2></div>
+          <div class="reveal">
+            <div class="about-text">
+              <p>Hi, I'm Matt — a Melbourne-based 3D artist and UX/UI designer with a passion for crafting believable worlds and intuitive experiences.</p>
+              <p>My 3D work spans environment art, prop modelling, and real-time rendering — always with game performance in mind. On the UX side, I'm drawn to research-led design: getting out of the building, talking to real people, and letting those insights shape the product.</p>
+              <p>In my free time, I enjoy geeking out about video and board games. If I'm not out and about eating, you will definitely catch me at home drawing, gaming or baking!</p>
+              <p>Feel free to reach out to me and have a chat about working together or geeking out!</p>
             </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Kingsley Express (3D) -->
-        <a class="card reveal" data-category="3d" data-project="kingsley-express" href="#" onclick="openProject('kingsley-express');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Kingsley<br>Express.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">3D Art</p>
-            <h3 class="card-title">Kingsley Express.</h3>
-            <p class="card-desc">A luxurious game-ready train carriage interior — grounded fantasy, warm lighting, and bespoke props optimised for Unreal Engine 4.</p>
-            <div class="card-tags">
-              <span class="tag">Maya</span><span class="tag">UE4</span><span class="tag">Marvellous Designer</span>
-              <span class="tag">ZBrush</span><span class="tag">Quixel</span>
+            <div class="about-links">
+              <a class="pill" href="mailto:matt.shujuku.yiu@gmail.com">Email me</a>
+              <a class="pill" href="https://www.linkedin.com/in/matthew-yiu-676995152/" target="_blank" rel="noopener">LinkedIn</a>
+              <a class="pill" href="resume.pdf" download="Matt_Yiu_Resume.pdf">Download CV</a>
             </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Japanese Alley Slice (3D) -->
-        <a class="card reveal" data-category="3d" data-project="japanese-alley" href="#" onclick="openProject('japanese-alley');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Japanese<br>Alley<br>Slice.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">3D Art</p>
-            <h3 class="card-title">Japanese Alley Slice.</h3>
-            <p class="card-desc">A dense vertical slice of a Japanese alley — a ramen shop diorama with meticulous prop work and faithful reference-based texturing.</p>
-            <div class="card-tags">
-              <span class="tag">Maya</span><span class="tag">RenderMan</span><span class="tag">ZBrush</span>
-              <span class="tag">Quixel</span><span class="tag">Marvellous Designer</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Still Life (3D) -->
-        <a class="card reveal" data-category="3d" data-project="still-life" href="#" onclick="openProject('still-life');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Still<br>Life.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">3D Art</p>
-            <h3 class="card-title">Still Life.</h3>
-            <p class="card-desc">A photo-replication challenge — hard surface and organic objects modelled in Maya and rendered with Pixar's RenderMan.</p>
-            <div class="card-tags">
-              <span class="tag">Maya</span><span class="tag">RenderMan</span><span class="tag">Quixel</span><span class="tag">Photoshop</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Gotcha (UX/UI) -->
-        <a class="card reveal" data-category="uxui" data-project="gotcha" href="#" onclick="openProject('gotcha');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Gotcha.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">UX / UI Design</p>
-            <h3 class="card-title">Gotcha.</h3>
-            <p class="card-desc">A 5-week UX sprint designing a web app to drive foot traffic for a bubble tea store — from guerilla research to a clickable Figma prototype.</p>
-            <div class="card-tags">
-              <span class="tag">Figma</span><span class="tag">Miro</span><span class="tag">Google Forms</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Neko Cat Hotel (UX/UI) -->
-        <a class="card reveal" data-category="uxui" data-project="neko" href="#" onclick="openProject('neko');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Neko<br>Cat Hotel.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">UX / UI Design</p>
-            <h3 class="card-title">Neko Cat Hotel.</h3>
-            <p class="card-desc">UX/UI design for a cat hotel booking experience — warm, approachable, and built around pet-owner anxieties.</p>
-            <div class="card-tags">
-              <span class="tag">Figma</span><span class="tag">Miro</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: iO Energy (UX/UI) -->
-        <a class="card reveal" data-category="uxui" data-project="io-energy" href="#" onclick="openProject('io-energy');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">iO<br>Energy.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">UX / UI Design</p>
-            <h3 class="card-title">iO Energy.</h3>
-            <p class="card-desc">App design for an energy management platform, bringing clarity to complex household energy data.</p>
-            <div class="card-tags">
-              <span class="tag">Figma</span><span class="tag">Miro</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- PROJECT: Mermade Hair (Graphic) -->
-        <a class="card reveal" data-category="graphic" data-project="mermade" href="#" onclick="openProject('mermade');return false;">
-          <div class="card-thumb-placeholder">
-            <div class="placeholder-title">Mermade<br>Hair.</div>
-          </div>
-          <div class="card-body">
-            <p class="card-category">Graphic Design</p>
-            <h3 class="card-title">Mermade Hair Pitch Deck.</h3>
-            <p class="card-desc">A visual pitch deck concept for Mermade Hair — brand-forward design with editorial photography integration.</p>
-            <div class="card-tags">
-              <span class="tag">Photoshop</span><span class="tag">Illustrator</span>
-            </div>
-          </div>
-        </a>
-
-      </div><!-- /grid -->
-    </div>
-  </section>
-
-  <!-- ── ABOUT ── -->
-  <section class="about" id="about">
-    <div class="container">
-      <div class="about-inner">
-        <div>
-          <h2 class="about-title reveal">About<br><em>Me.</em></h2>
-        </div>
-        <div class="reveal">
-          <div class="about-text">
-            <p>
-              Hi, I'm Matt — a Melbourne-based 3D artist and UX/UI designer with a passion for
-              crafting believable worlds and intuitive experiences.
-            </p>
-            <p>
-              My 3D work spans environment art, prop modelling, and real-time rendering —
-              always with game performance in mind. On the UX side, I'm drawn to research-led
-              design: getting out of the building, talking to real people, and letting those
-              insights shape the product.
-            </p>
-            <p>
-              When I'm not making things on screen, you'll find me sketching, exploring Melbourne's
-              back alleys for reference, or failing at boba tea order restraint.
-            </p>
-          </div>
-          <div class="about-links">
-            <a class="pill" href="mailto:matt.shujuku.yiu@gmail.com">Email me</a>
-            <a class="pill" href="https://www.linkedin.com/in/matthew-yiu-676995152/" target="_blank" rel="noopener">LinkedIn</a>
-            <a class="pill" href="https://www.instagram.com/inkcider/" target="_blank" rel="noopener">Instagram</a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ── FOOTER ── -->
-  <footer>
-    <p>© 2026 Matthew Yiu</p>
-    <p>matt.shujuku.yiu@gmail.com</p>
-  </footer>
-
-
-  <!-- ═══════════════════════════════════════════════════
-       PROJECT MODAL OVERLAY
-  ═══════════════════════════════════════════════════ -->
-  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal-inner" id="modal-content">
-      <!-- Injected by JS -->
-    </div>
+    <footer>
+      <p>© 2026 Matthew Yiu</p>
+      <p>matt.shujuku.yiu@gmail.com</p>
+    </footer>
   </div>
 
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-inner" id="modal-content"></div>
+  </div>
 
   <script>
-    /* ── PROJECTS DATA ── */
-    const projects = {
+  /* ── 1. GRID CANVAS ── */
+  (function() {
+    const canvas = document.getElementById('grid-canvas');
+    const ctx = canvas.getContext('2d');
+    const CELL=40, INFLUENCE=110, STRENGTH=30, DAMPING=0.09;
+    let W, H, COLS, ROWS, pts=[], mouseX=-9999, mouseY=-9999, rafId;
+    function idx(r,c){return r*COLS+c;}
+    function resize(){
+      W=window.innerWidth; H=window.innerHeight;
+      canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+      canvas.style.width=W+'px'; canvas.style.height=H+'px';
+      ctx.scale(devicePixelRatio,devicePixelRatio);
+      COLS=Math.ceil(W/CELL)+1; ROWS=Math.ceil(H/CELL)+1;
+      pts=[];
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
+        pts.push({bx:c*CELL,by:r*CELL,x:c*CELL,y:r*CELL});
+    }
+    function loop(){
+      ctx.clearRect(0,0,W,H); ctx.fillStyle='#F0EDE4'; ctx.fillRect(0,0,W,H);
+      for(let i=0;i<pts.length;i++){
+        const p=pts[i], dx=p.bx-mouseX, dy=p.by-mouseY;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        let tx=p.bx, ty=p.by;
+        if(dist<INFLUENCE&&dist>0.5){const f=1-dist/INFLUENCE; const push=f*f*STRENGTH; tx=p.bx+(dx/dist)*push; ty=p.by+(dy/dist)*push;}
+        p.x+=(tx-p.x)*DAMPING; p.y+=(ty-p.y)*DAMPING;
+      }
+      ctx.strokeStyle='rgba(0,0,0,0.09)'; ctx.lineWidth=0.8;
+      for(let r=0;r<ROWS;r++){ctx.beginPath(); for(let c=0;c<COLS;c++){const p=pts[idx(r,c)]; c===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);} ctx.stroke();}
+      for(let c=0;c<COLS;c++){ctx.beginPath(); for(let r=0;r<ROWS;r++){const p=pts[idx(r,c)]; r===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);} ctx.stroke();}
+      rafId=requestAnimationFrame(loop);
+    }
+    document.addEventListener('mousemove',e=>{mouseX+=(e.clientX-mouseX)*0.15; mouseY+=(e.clientY-mouseY)*0.15;});
+    document.addEventListener('mouseleave',()=>{mouseX=-9999;mouseY=-9999;});
+    window.addEventListener('resize',()=>{cancelAnimationFrame(rafId);resize();loop();});
+    resize(); loop();
+  })();
 
-      'still-life': {
-        category: '3D Art',
-        title: 'Still<br><em>Life.</em>',
-        tags: ['Maya', 'RenderMan', 'Quixel', 'Photoshop'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Software', value: 'Maya · RenderMan · Quixel' },
-          { label: 'Focus', value: 'Hard Surface & Organic Modelling' },
-        ],
-        body: [
-          `The idea of this project was to challenge myself in replicating a photo of objects.
-           It was an opportunity for me to test my capabilities in modelling off of references.
-           I chose a variety of objects that would challenge my understanding of hard surface
-           and organic modelling, along with their respective textures.`,
-          `All the objects were modelled in Maya using subdiv modelling. Since they would be
-           rendered for the final product, polycount wasn't a concern. Models were unwrapped
-           in Maya and textured using a combination of Quixel textures and photos edited in
-           Photoshop. Transparent and reflective materials were created using Pixar's RenderMan,
-           which was also used for the final render.`
-        ],
-        figma: null,
-        images: []
-      },
+  /* ── 2. CROSSES ── */
+  (function() {
+    const crosses=Array.from(document.querySelectorAll('.cross-mark')).map(el=>({el,angle:0,spinning:false}));
+    function spinOne(item){
+      if(item.spinning)return; item.spinning=true;
+      const start=performance.now(),startAngle=item.angle,endAngle=startAngle+360,dur=900;
+      function tick(now){
+        const t=Math.min((now-start)/dur,1);
+        const eased=t<1?1-Math.pow(1-t,3)+Math.sin(t*Math.PI)*0.08:1;
+        const deg=startAngle+(endAngle-startAngle)*eased;
+        item.angle=t<1?deg:endAngle%360;
+        const scale=1+Math.sin(t*Math.PI)*0.35, op=0.4+Math.sin(t*Math.PI)*0.45;
+        item.el.style.transform=`translate(-50%,-50%) rotate(${deg}deg) scale(${scale})`;
+        item.el.style.opacity=op;
+        if(t<1){requestAnimationFrame(tick);}
+        else{item.el.style.transform=`translate(-50%,-50%) rotate(${item.angle}deg) scale(1)`;item.el.style.opacity='0.4';item.spinning=false;}
+      }
+      requestAnimationFrame(tick);
+    }
+    function schedule(){spinOne(crosses[Math.floor(Math.random()*crosses.length)]);setTimeout(schedule,1800+Math.random()*3200);}
+    if(crosses.length)setTimeout(schedule,1800);
+  })();
 
-      'kingsley-express': {
-        category: '3D Art',
-        title: 'Kingsley<br><em>Express.</em>',
-        tags: ['Maya', 'Unreal Engine 4', 'Marvellous Designer', 'ZBrush', 'Quixel', 'Photoshop'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Engine', value: 'Unreal Engine 4' },
-          { label: 'Focus', value: 'Real-time Environment Art' },
-        ],
-        body: [
-          `This project was created with game optimisation at the forefront. The goal was to
-           achieve the highest visual fidelity without compromising performance. I created
-           a mood board to visualise my interpretation of a luxurious train carriage, which
-           helped define a colour palette that harmonises the lighting and theme.`,
-          `The interior design and props were based on the idea of a grounded fantasy setting,
-           adhering to technological constraints throughout. Finalised concepts were blocked out
-           in UE4 to measure scale and practicality. Models were then textured with frequent
-           adjustments to maintain consistency across the scene.`
-        ],
-        figma: null,
-        images: []
-      },
+  /* ── 3. TYPEWRITER ── */
+  function typewrite(el, segments, onDone) {
+    el.innerHTML='';
+    const cursor=document.createElement('span'); cursor.className='type-cursor'; el.appendChild(cursor);
+    let segIdx=0, charIdx=0;
+    const speed=80;
+    function next(){
+      if(segIdx>=segments.length){
+        setTimeout(()=>{cursor.style.animation='none';cursor.style.opacity='0';setTimeout(()=>cursor.remove(),400);if(onDone)onDone();},500);
+        return;
+      }
+      const seg=segments[segIdx];
+      if(seg.tag==='br'){el.insertBefore(document.createElement('br'),cursor);segIdx++;charIdx=0;setTimeout(next,speed*0.5);return;}
+      if(charIdx<seg.text.length){
+        const char=seg.text[charIdx];
+        if(seg.tag){
+          let w=el.querySelector('.'+seg.tag+'-wrap');
+          if(!w){w=document.createElement(seg.tag);w.className=seg.tag+'-wrap';el.insertBefore(w,cursor);}
+          w.textContent+=char;
+        } else {
+          let tn=cursor.previousSibling;
+          if(!tn||tn.nodeType!==Node.TEXT_NODE){tn=document.createTextNode('');el.insertBefore(tn,cursor);}
+          tn.textContent+=char;
+        }
+        charIdx++; setTimeout(next,speed+(char==='.'?speed*3:0));
+      } else {segIdx++;charIdx=0;setTimeout(next,speed*0.3);}
+    }
+    setTimeout(next,300);
+  }
+  (function(){
+    const el=document.getElementById('hero-title-el'); if(!el)return;
+    typewrite(el,[{text:'Matt',tag:null},{text:'',tag:'br'},{text:'Yiu.',tag:'em'}]);
+  })();
 
-      'japanese-alley': {
-        category: '3D Art',
-        title: 'Japanese<br><em>Alley Slice.</em>',
-        tags: ['Maya', 'RenderMan', 'ZBrush', 'Quixel', 'Marvellous Designer', 'Photoshop'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Software', value: 'Maya · RenderMan · ZBrush' },
-          { label: 'Focus', value: 'Environment Art · Set Dressing' },
-        ],
-        body: [
-          `There was a conscious effort and focus on detail as the criteria for this project.
-           A vertical slice of a Japanese alley was chosen for its density of content within a
-           small space. A curated list of props was assembled from reference photography of
-           the source material, then the set was blocked out in Maya for placement and
-           set dressing planning.`,
-          `This set was approached with a strong focus on individual components. Most models
-           were referenced from their real-life counterparts, with creativity expressed through
-           texturing and faithful recreation. The result is a diorama-style environment
-           that rewards close inspection.`
-        ],
-        figma: null,
-        images: []
-      },
+  /* ── 4. PARALLAX ── */
+  (function(){
+    const el=document.getElementById('hero-parallax'), hero=document.getElementById('hero-section');
+    window.addEventListener('scroll',()=>{const s=window.scrollY;if(s<hero.offsetHeight)el.style.transform=`translateY(${s*0.22}px)`;},{passive:true});
+  })();
 
-      'cosy-room': {
-        category: '3D Art',
-        title: 'Cosy<br><em>Room.</em>',
-        tags: ['Maya', 'ZBrush', 'Crazy Bump', 'Quixel Mixer', 'Marvellous Designer',
-               'Marmoset Toolbag 4', 'Photoshop', 'Unreal Engine 5',
-               'Substance Sampler', 'Substance Painter'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Engine', value: 'Unreal Engine 5' },
-          { label: 'Focus', value: 'Environment Art · Storytelling' },
-        ],
-        body: [
-          `I was inspired to create a cosy nook from a photo I saw online. I used this project
-           to challenge myself not only in using new software, but in my modelling and composition
-           knowledge. A living space as subject matter gave me an opportunity to indirectly
-           personify a character through the visual storytelling of its props.`,
-          `Each prop was created with game optimisation in mind, maximising polygon use without
-           excess. Despite the number of assets, every single one was crafted with meticulous
-           detail to create a holistically believable environment. If you look at this scene and
-           wish you had a bed space like this — mission accomplished.`
-        ],
-        figma: null,
-        images: []
-      },
+  /* ── 5. CURSOR + MORPHING PILL ── */
+  const ring = document.getElementById('cursor-ring');
+  const ringText = document.getElementById('ring-text');
+  let currentProjectId = null;
 
-      'gotcha': {
-        category: 'UX / UI Design',
-        title: '<em>Gotcha.</em>',
-        tags: ['Figma', 'Miro', 'Google Forms'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Timeline', value: '5-Week Sprint (Apr–May 2022)' },
-          { label: 'Role', value: 'Researcher · Product Designer' },
-        ],
-        body: [
-          `As part of a personal project, I tackled a local bubble tea store to find ways to
-           improve their foot traffic. M-City shoppers were unaware of Gotcha's upstairs
-           location — competitors on the ground floor captured all the convenience-driven
-           purchases. The problem: if people can only find you by accident, there's a problem.`,
-          `Research across 67 survey responses and 12 interviews revealed that convenience
-           drove 37% of purchase decisions. The insight led to pivoting from an app to a
-           web app — requiring no download or sign-in — that let customers order ahead and
-           collect at the escalator base. Testing cut order time from 29 seconds to under
-           10 seconds with a repeat-order feature.`
-        ],
-        figma: 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FOee44ANZAacN49tSxq9Mr4%2FGotcha-Web-App%3Fnode-id%3D182%253A6455%26scaling%3Dscale-down%26page-id%3D182%253A5947%26starting-point-node-id%3D182%253A6455%26hide-ui=1',
-        images: []
-      },
+  function getFilteredOrder() {
+    return Array.from(document.querySelectorAll('.card'))
+      .filter(c => c.getAttribute('data-hidden') !== 'true' && c.style.visibility !== 'hidden')
+      .map(c => c.getAttribute('data-project'))
+      .filter(Boolean);
+  }
 
-      'neko': {
-        category: 'UX / UI Design',
-        title: 'Neko<br><em>Cat Hotel.</em>',
-        tags: ['Figma', 'Miro'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Tools', value: 'Figma · Miro' },
-          { label: 'Focus', value: 'UX Research · UI Design' },
-        ],
-        body: [
-          `A UX/UI project designing the booking experience for a cat hotel. The design
-           centred on reducing the anxiety pet owners feel when leaving their animals
-           with strangers — through transparency, warm visuals, and clear communication
-           at every step of the booking flow.`,
-          `Add your own notes about this project here — the process, research insights,
-           and outcomes you're most proud of.`
-        ],
-        figma: null,
-        images: []
-      },
+  (function(){
+    let rx=0, ry=0, tx=0, ty=0;
+    const EDGE=0.12;
+    let pillActive=false;
 
-      'io-energy': {
-        category: 'UX / UI Design',
-        title: 'iO<br><em>Energy.</em>',
-        tags: ['Figma', 'Miro'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Tools', value: 'Figma · Miro' },
-          { label: 'Focus', value: 'Data Visualisation · App Design' },
-        ],
-        body: [
-          `App design for an energy management platform, translating complex household energy
-           consumption data into something approachable and actionable for everyday users.`,
-          `Add your own notes about this project here — the brief, your process, and key
-           design decisions you made along the way.`
-        ],
-        figma: null,
-        images: []
-      },
-
-      'mermade': {
-        category: 'Graphic Design',
-        title: 'Mermade<br><em>Hair.</em>',
-        tags: ['Photoshop', 'Illustrator'],
-        meta: [
-          { label: 'Type', value: 'Personal Project' },
-          { label: 'Tools', value: 'Photoshop · Illustrator' },
-          { label: 'Focus', value: 'Brand · Editorial Design' },
-        ],
-        body: [
-          `A pitch deck concept for Mermade Hair — a beauty brand with strong editorial
-           photography. The design language needed to feel premium without losing the
-           brand's accessible personality.`,
-          `Add your own notes about this project here — the brief, visual direction
-           decisions, and what you'd do differently.`
-        ],
-        figma: null,
-        images: []
-      },
-
-    };
-
-    /* ── OPEN / CLOSE MODAL ── */
-    function openProject(id) {
-      const p = projects[id];
-      if (!p) return;
-
-      const tagsHtml = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
-      const metaHtml = p.meta.map(m =>
-        `<div class="modal-meta-item"><label>${m.label}</label><span>${m.value}</span></div>`
-      ).join('');
-      const bodyHtml = p.body.map(para => `<p>${para}</p>`).join('');
-
-      const figmaHtml = p.figma ? `
-        <p class="embed-label">Interactive Prototype</p>
-        <div class="modal-embed-wrap">
-          <iframe src="${p.figma}" allowfullscreen></iframe>
-        </div>
-        <p style="font-size:0.75rem;color:var(--ink-light);margin-bottom:2rem;">
-          Hit <kbd>R</kbd> to restart the prototype on desktop.
-        </p>
-      ` : '';
-
-      document.getElementById('modal-content').innerHTML = `
-        <button class="modal-back" onclick="closeModal()">Back to works</button>
-        <p class="modal-eyebrow">${p.category}</p>
-        <h2 class="modal-title">${p.title}</h2>
-        <div class="modal-tags">${tagsHtml}</div>
-        <div class="modal-meta">${metaHtml}</div>
-        <div class="modal-body">
-          <div>${bodyHtml}</div>
-          <div><!-- space for images or extra content --></div>
-        </div>
-        ${figmaHtml}
-      `;
-
-      const overlay = document.getElementById('modal-overlay');
-      overlay.classList.add('open');
-      overlay.scrollTop = 0;
-      document.body.style.overflow = 'hidden';
+    function showPill(label){
+      ringText.textContent=label;
+      /* Width: measure text, add padding */
+      const w=Math.max(ringText.scrollWidth+28, 110);
+      ring.style.width=w+'px';
+      ring.classList.add('pill-active');
+      ring.style.opacity='1';
+      pillActive=true;
     }
 
-    function closeModal() {
-      document.getElementById('modal-overlay').classList.remove('open');
-      document.body.style.overflow = '';
+    function hidePill(){
+      if(!pillActive)return;
+      ring.classList.remove('pill-active');
+      ring.style.width='32px';
+      pillActive=false;
+      /* Clear text after transition */
+      setTimeout(()=>{ if(!pillActive) ringText.textContent=''; },400);
     }
 
-    /* Close on overlay background click */
-    document.getElementById('modal-overlay').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
+    document.addEventListener('mousemove',e=>{
+      tx=e.clientX; ty=e.clientY;
+      ring.style.opacity='1';
+
+      const isModal=document.getElementById('modal-overlay').classList.contains('open');
+      if(isModal && currentProjectId){
+        const ratio=e.clientX/window.innerWidth;
+        const order=getFilteredOrder();
+        const oi=order.indexOf(currentProjectId);
+        if(ratio<EDGE){
+          const pid=order[(oi-1+order.length)%order.length];
+          const label=pid!==currentProjectId
+            ? '← '+projects[pid].title.replace(/<[^>]*>/g,'').trim()
+            : '← Back to works';
+          showPill(label);
+        } else if(ratio>(1-EDGE)){
+          const nid=order[(oi+1)%order.length];
+          const label=projects[nid].title.replace(/<[^>]*>/g,'').trim()+' →';
+          showPill(label);
+        } else {
+          hidePill();
+        }
+      } else {
+        hidePill();
+      }
     });
 
-    /* Close on Escape key */
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
+    document.addEventListener('mouseleave',()=>{ring.style.opacity='0';hidePill();});
+
+    /* Clicking in edge zones while modal is open — attached to modal overlay */
+    document.getElementById('modal-overlay').addEventListener('click',function(e){
+      /* If click is on a child element (button/link), don't handle it here */
+      if(e.target!==this && e.target.closest('button,a')) return;
+      /* If clicking the overlay background itself (not edge) → close */
+      if(e.target===this){
+        const ratio=e.clientX/window.innerWidth;
+        if(ratio<EDGE){
+          const order=getFilteredOrder(); const oi=order.indexOf(currentProjectId);
+          if(order.length>1){ openProject(order[(oi-1+order.length)%order.length]); }
+          else { closeModal(); }
+        } else if(ratio>(1-EDGE)){
+          const order=getFilteredOrder(); const oi=order.indexOf(currentProjectId);
+          openProject(order[(oi+1)%order.length]);
+        } else {
+          closeModal();
+        }
+      }
     });
 
-    /* ── FILTER ── */
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
+    document.querySelectorAll('a, button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{if(!pillActive){ring.style.width='48px';ring.style.height='32px';ring.style.borderColor='rgba(17,17,17,0.65)';}});
+      el.addEventListener('mouseleave',()=>{if(!pillActive){ring.style.width='32px';ring.style.borderColor='rgba(17,17,17,0.4)';}});
+    });
 
-        const filter = this.dataset.filter;
-        document.querySelectorAll('.card').forEach(card => {
-          if (filter === 'all' || card.dataset.category === filter) {
-            card.setAttribute('data-hidden', 'false');
+    (function anim(){
+      rx+=(tx-rx)*0.1; ry+=(ty-ry)*0.1;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(anim);
+    })();
+
+    window.addEventListener('touchstart',()=>{ring.style.display='none';document.body.style.cursor='auto';},{once:true});
+  })();
+
+  /* ── 6. PROJECTS ── */
+  const projects = {
+    'still-life':{
+      category:'3D Art', title:'Still<br><em>Life.</em>',
+      tags:['Maya','RenderMan','Quixel','Photoshop'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Software',value:'Maya · RenderMan · Quixel'},{label:'Focus',value:'Hard Surface & Organic Modelling'}],
+      body:['The idea of this project was to challenge myself in replicating a photo of objects. It was an opportunity to test my capabilities in modelling off references — I chose a variety of objects that would push my understanding of hard surface and organic modelling, along with their respective textures.',"All objects were modelled in Maya using subdiv modelling. Since they would be rendered for the final product, polycount wasn't a concern. Models were unwrapped in Maya and textured using a combination of Quixel textures and Photoshop-edited photos. Transparent and reflective materials were created using Pixar's RenderMan, which was also used for the final render."],
+      figma:null
+    },
+    'kingsley-express':{
+      category:'3D Art', title:'Kingsley<br><em>Express.</em>',
+      tags:['Maya','Unreal Engine 4','Marvellous Designer','ZBrush','Quixel','Photoshop'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Engine',value:'Unreal Engine 4'},{label:'Focus',value:'Real-time Environment Art'}],
+      body:['This project was created with game optimisation at the forefront — achieving the highest visual fidelity without compromising performance. I created a mood board to visualise my interpretation of a luxurious train carriage, which helped define a colour palette that harmonises the lighting and theme.','The interior design and props were grounded in a fantasy setting, adhering to technological constraints throughout. Finalised concepts were blocked out in UE4 to measure scale and practicality, then textured with frequent adjustments to maintain consistency across the scene.'],
+      figma:null
+    },
+    'japanese-alley':{
+      category:'3D Art', title:'Japanese<br><em>Alley Slice.</em>',
+      tags:['Maya','RenderMan','ZBrush','Quixel','Marvellous Designer','Photoshop'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Software',value:'Maya · RenderMan · ZBrush'},{label:'Focus',value:'Environment Art · Set Dressing'}],
+      body:["There was a conscious effort and focus on detail as the criteria for this project. A vertical slice of a Japanese alley was chosen for its density of content within a small space. A curated prop list was assembled from source material references, then the set was blocked out in Maya to establish key placement and set dressing.","This set was approached with a strong focus on individual components. Most models were referenced from real-life counterparts, with creativity expressed through the approach to texturing and faithful recreation. The result is a diorama that rewards close inspection."],
+      figma:null
+    },
+    'cosy-room':{
+      category:'3D Art', title:'Cosy<br><em>Room.</em>',
+      tags:['Maya','ZBrush','Crazy Bump','Quixel Mixer','Marvellous Designer','Marmoset Toolbag 4','Photoshop','Unreal Engine 5','Substance Sampler','Substance Painter'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Engine',value:'Unreal Engine 5'},{label:'Focus',value:'Environment Art · Storytelling'}],
+      body:["I was inspired to create a cosy nook from a photo I saw online. I used this project to challenge myself not only in using new software, but in my modelling and composition knowledge. A living space gave me an opportunity to indirectly personify a character through the visual storytelling of its props.","Each prop was created with game optimisation in mind, maximising polygon use without excess. Despite the number of assets, every single one was crafted with meticulous detail to create a holistically believable environment. If you look at this scene and wish you had a bed space like this — mission accomplished."],
+      figma:null
+    },
+    'gotcha':{
+      category:'UX / UI Design', title:'<em>Gotcha.</em>',
+      tags:['Figma','Miro','Google Forms'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Timeline',value:'5-Week Sprint (Apr–May 2022)'},{label:'Role',value:'Researcher · Product Designer'}],
+      body:["As part of a personal project, I tackled a local bubble tea store to find ways to improve their foot traffic. M-City shoppers were unaware of Gotcha's upstairs location — competitors on the ground floor captured all convenience-driven purchases. The problem statement: bridge the inconvenience of ordering from Gotcha while making the menu accessible.","Research across 67 survey responses and 12 interviews revealed convenience drove 37% of purchase decisions. This led to pivoting from an app to a web app — no download or sign-in required — letting customers order ahead and collect at the escalator base. Testing reduced order time from 29 seconds to under 10 seconds with a repeat-order feature."],
+      figma:'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FOee44ANZAacN49tSxq9Mr4%2FGotcha-Web-App%3Fnode-id%3D182%253A6455%26scaling%3Dscale-down%26page-id%3D182%253A5947%26starting-point-node-id%3D182%253A6455%26hide-ui=1'
+    },
+    'neko':{
+      category:'Graphic Design', title:'Neko<br><em>Cat Hotel.</em>',
+      tags:['Figma','Miro'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Tools',value:'Figma · Miro'},{label:'Focus',value:'UX Research · UI Design'}],
+      body:["A UX/UI project designing the booking experience for a cat hotel. The design centred on reducing the anxiety pet owners feel when leaving their animals with strangers — through transparency, warm visuals, and clear communication at every step.","Add your own notes here — process, research insights, and outcomes you're most proud of."],
+      figma:null
+    },
+    'io-energy':{
+      category:'UX / UI Design', title:'iO<br><em>Energy.</em>',
+      tags:['Figma','Miro'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Tools',value:'Figma · Miro'},{label:'Focus',value:'Data Visualisation · App Design'}],
+      body:["App design for an energy management platform, translating complex household energy consumption data into something approachable and actionable for everyday users.","Add your own notes here — the brief, your process, and key design decisions you made along the way."],
+      figma:null
+    },
+    'fine-china':{
+      category:'Graphic Design', title:'Fine<br><em>China.</em>',
+      tags:['Illustrator','Photoshop','InDesign'],
+      meta:[{label:'Type',value:'Client Project'},{label:'Tools',value:'Illustrator · Photoshop · InDesign'},{label:'Focus',value:'Brand Identity · Menu Design'}],
+      body:["Fine China is a family-owned local takeout store that prides itself on the authenticity of its handcrafted Chinese dishes. My task was to create a visual identity that is representative of the passion they have for their craft.","The identity system covers logo design, brand language, and menu design — balancing a contemporary aesthetic with warmth and cultural authenticity."],
+      figma:null
+    },
+    'mermade':{
+      category:'Graphic Design', title:'Mermade<br><em>Hair.</em>',
+      tags:['Photoshop','Illustrator'],
+      meta:[{label:'Type',value:'Personal Project'},{label:'Tools',value:'Photoshop · Illustrator'},{label:'Focus',value:'Brand · Editorial Design'}],
+      body:["A pitch deck concept for Mermade Hair — a beauty brand with strong editorial photography. The design language needed to feel premium without losing the brand's accessible personality.","Add your own notes here — the brief, visual direction decisions, and what you'd do differently."],
+      figma:null
+    }
+  };
+
+  function openProject(id){
+    const p=projects[id]; if(!p)return;
+    currentProjectId=id;
+    const tagsHtml=p.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    const metaHtml=p.meta.map(m=>`<div class="modal-meta-item"><label>${m.label}</label><span>${m.value}</span></div>`).join('');
+    const bodyHtml=p.body.map(para=>`<p>${para}</p>`).join('');
+    const figmaHtml=p.figma?`<p class="embed-label">Interactive Prototype</p><div class="figma-wrap" id="figma-wrap"><button class="figma-fs-btn" id="figma-fs-btn" onclick="toggleFigmaFS()">⛶ Fullscreen</button><div class="modal-embed-wrap"><iframe src="${p.figma}" allowfullscreen></iframe></div></div><p style="font-size:0.75rem;color:var(--ink-light);margin-bottom:2rem;">Hit <kbd>R</kbd> to restart on desktop.</p>`:'';
+    const order=getFilteredOrder();
+    const oi=order.indexOf(id);
+    const nextId=order[(oi+1)%order.length];
+    const prevId=order[(oi-1+order.length)%order.length];
+
+    document.getElementById('modal-content').innerHTML=
+      `<div class="modal-nav">`+
+        `<button class="modal-prev" onclick="openProject('${prevId}')">Prev project</button>`+
+        `<button class="modal-back" onclick="closeModal()">Back to works</button>`+
+        `<button class="modal-next" onclick="openProject('${nextId}')">Next project</button>`+
+      `</div>`+
+      `<p class="modal-eyebrow">${p.category}</p>`+
+      `<h2 class="modal-title" id="modal-title-el" aria-label="${p.title.replace(/<[^>]*>/g,'')}"></h2>`+
+      `<div class="modal-tags">${tagsHtml}</div>`+
+      `<div class="modal-meta">${metaHtml}</div>`+
+      `<div class="modal-body"><div>${bodyHtml}</div><div></div></div>`+
+      figmaHtml;
+
+    const overlay=document.getElementById('modal-overlay');
+    overlay.classList.add('open'); overlay.scrollTop=0; document.body.style.overflow='hidden';
+
+    const titleEl=document.getElementById('modal-title-el');
+    if(titleEl){
+      const segs=[];
+      const tmp=document.createElement('div'); tmp.innerHTML=p.title;
+      tmp.childNodes.forEach(node=>{
+        if(node.nodeType===Node.TEXT_NODE&&node.textContent.trim()) segs.push({text:node.textContent,tag:null});
+        else if(node.nodeName==='BR') segs.push({text:'',tag:'br'});
+        else if(node.nodeName==='EM') segs.push({text:node.textContent,tag:'em'});
+      });
+      typewrite(titleEl,segs);
+    }
+
+    /* Re-attach ring grow to fresh modal buttons */
+    document.querySelectorAll('.modal-prev,.modal-back,.modal-next').forEach(btn=>{
+      btn.addEventListener('mouseenter',()=>{ring.style.width='48px';ring.style.borderColor='rgba(17,17,17,0.65)';});
+      btn.addEventListener('mouseleave',()=>{ring.style.width='32px';ring.style.borderColor='rgba(17,17,17,0.4)';});
+    });
+  }
+
+  function toggleFigmaFS(){
+    const wrap = document.getElementById('figma-wrap');
+    const btn  = document.getElementById('figma-fs-btn');
+    if(!wrap) return;
+    const isFS = wrap.classList.toggle('fullscreen');
+    btn.textContent = isFS ? '✕ Exit fullscreen' : '⛶ Fullscreen';
+    /* Prevent page scroll while in fullscreen */
+    document.body.style.overflow = isFS ? 'hidden' : '';
+  }
+
+  function closeModal(){
+    /* Exit figma fullscreen if active */
+    const wrap = document.getElementById('figma-wrap');
+    if(wrap) wrap.classList.remove('fullscreen');
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow='';
+    currentProjectId=null;
+  }
+
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+  /* ── 7. FILTER ── */
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      const filter=this.dataset.filter;
+      const cards=Array.from(document.querySelectorAll('.card'));
+      cards.forEach(card=>{card.style.opacity='0';});
+      setTimeout(()=>{
+        let vi=0;
+        cards.forEach(card=>{
+          const show=filter==='all'||card.dataset.category===filter;
+          if(show){
+            card.setAttribute('data-hidden','false');
+            card.style.position=''; card.style.visibility='';
+            setTimeout(()=>{card.style.opacity='1';},vi*60); vi++;
           } else {
-            card.setAttribute('data-hidden', 'true');
+            card.setAttribute('data-hidden','true');
           }
         });
-      });
+      },280);
     });
+  });
 
-    /* ── SCROLL REVEAL ── */
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  /* ── 8. SCROLL REVEAL ── */
+  const ro=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});
+  },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
   </script>
 </body>
 </html>
