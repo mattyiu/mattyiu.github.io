@@ -443,7 +443,7 @@ var projects = {
   'heir-of-hair': {
     category: 'Animation', title: 'Heir of<br><em>Hair.</em>',
     tags: ['Storyboarding','Animatic','Character Design'],
-    meta: [{label:'Type',value:'Personal Project'},{label:'Format',value:'Animatic'},{label:'Style',value:'Disney-inspired'}],
+    meta: [{label:'Type',value:'Personal Project'},{label:'Format',value:'Animatic'},{label:'Theme',value:'Advertisement'}],
     body: ['This was a project to create a short story board and animatic of an advertisement for a product. The product I decided to create was a hair styling machine, cause who would not want a personal hair stylist at home?','I wanted to create a dichotomy through the unique blend of futuristic tech utilizing old school tech. While the helmet is technically advanced, it is bogged down by the use of floppy disks and a not so portable design. For this art direction, I leaned heavily towards Disney\'s style of characters. I love the exaggerated expressions that Disney characters have, and because the animatic would not feature voices, I thought the facial expressions would be a good substitute.'],
     youtube: 'https://www.youtube.com/embed/M9Luib38s2Y',
     hero: null,
@@ -453,7 +453,7 @@ var projects = {
   'fractured': {
     category: 'Animation', title: '<em>Fractured.</em>',
     tags: ['Storyboarding','Animatic','Character Design','Colour Theory'],
-    meta: [{label:'Type',value:'Group Project'},{label:'Frames',value:'424 Drawings'},{label:'Format',value:'Animatic'}],
+    meta: [{label:'Type',value:'Group Project'},{label:'Format',value:'Animatic'},{label:'Theme',value:'Short Story'}],
     body: ['This was a group based project where we had to storyboard a short story and create an animatic as the final piece. I penned the idea of having a romance story based on microtransactions in games — how a society with pay-to-win relationships work, explored through the eyes of Faux.','For this project we used colours as an extension of the character\'s emotions, so their inner feelings are not just exclusively communicated through their face or body. The characters struck a nice balance between simplicity and detail, making the final animatic easier to produce. The final animatic resulted in 424 frames of drawing!'],
     youtube: 'https://www.youtube.com/embed/rcP6mKszN9Y',
     hero: null,
@@ -790,6 +790,14 @@ function openProject(id) {
       '</div>';
   }
 
+  /* Determine render order — youtube acts as hero for projects with both video and slider */
+  var mainContent;
+  if(p.youtube && p.comparePairs && p.comparePairs.length){
+    mainContent = heroHtml + youtubeHtml + compareHtml + galleryHtml + figmaHtml;
+  } else {
+    mainContent = heroHtml + compareHtml + youtubeHtml + galleryHtml + figmaHtml;
+  }
+
   document.getElementById('modal-content').innerHTML=
     '<div class="modal-nav">'+
       '<button class="modal-prev" onclick="openProject(\''+prevId+'\')">Prev project</button>'+
@@ -801,7 +809,7 @@ function openProject(id) {
     '<div class="modal-tags">'+tagsHtml+'</div>'+
     '<div class="modal-meta">'+metaHtml+'</div>'+
     '<div class="modal-body"><div>'+bodyHtml+'</div></div>'+
-    heroHtml+compareHtml+youtubeHtml+galleryHtml+figmaHtml;
+    mainContent;
 
   /* Build lightbox image list */
   lbImages=[];
