@@ -156,6 +156,33 @@
     .figma-wrap.fullscreen { position: fixed; inset: 0; z-index: 500; margin: 0; padding: 0; background: var(--cream); }
     .figma-wrap.fullscreen .modal-embed-wrap { position: absolute; inset: 0; padding-bottom: 0; height: 100%; }
 
+    /* YouTube embed */
+    .yt-wrap { position: relative; width: 100%; padding-bottom: 56.25%; margin-bottom: 2rem; background: #000; border-radius: 2px; overflow: hidden; }
+    .yt-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .yt-fs-wrap { position: relative; margin-bottom: 2rem; }
+    .yt-fs-btn { position: absolute; top: 0.6rem; right: 0.6rem; z-index: 10; padding: 0.35rem 0.85rem; border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(17,17,17,0.7); color: #fff; cursor: none; font-family: 'Inter', sans-serif; transition: background 0.2s; }
+    .yt-fs-btn:hover { background: rgba(17,17,17,0.95); }
+    .yt-fs-wrap.fullscreen { position: fixed; inset: 0; z-index: 500; margin: 0; background: #000; display: flex; align-items: center; justify-content: center; }
+    .yt-fs-wrap.fullscreen .yt-wrap { position: absolute; inset: 0; padding-bottom: 0; height: 100%; }
+    .yt-fs-wrap.fullscreen .yt-fs-btn { top: 1rem; right: 1rem; }
+
+    /* Scroll to top */
+    #scroll-top {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 90;
+      padding: 0.5rem 1.1rem; border: 1px solid var(--pill-border); border-radius: 999px;
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: rgba(240,237,228,0.92); color: var(--ink);
+      cursor: none; font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(8px);
+      border: 1px solid var(--pill-border);
+    }
+    #scroll-top.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+    #scroll-top:hover { background: var(--ink); color: var(--cream); }
+    @media(max-width:768px){ #scroll-top { cursor: auto; } }
+
     /* Lightbox */
     #lightbox { position: fixed; inset: 0; z-index: 600; background: rgba(17,17,17,0.96); display: none; align-items: center; justify-content: center; flex-direction: column; }
     #lightbox.open { display: flex; }
@@ -218,6 +245,8 @@
   </div>
 </div>
 
+  <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+
 <section id="hero-section">
   <div class="hero-content" id="hero-parallax">
     <p class="hero-eyebrow">3D Artist &amp; UX/UI Designer</p>
@@ -241,6 +270,7 @@
           <button class="filter-btn active" data-filter="all">All</button>
           <button class="filter-btn" data-filter="3d">3D Art</button>
           <button class="filter-btn" data-filter="uxui">UX / UI</button>
+          <button class="filter-btn" data-filter="animation">Animation</button>
         </div>
       </div>
       <div class="grid" id="project-grid">
@@ -282,11 +312,30 @@
         </a>
 
         <a class="card reveal" data-category="uxui" data-project="gotcha" href="#" onclick="openProject('gotcha');return false;">
-          <div class="card-thumb-placeholder"><div class="placeholder-title">Gotcha.</div></div>
+          <img class="card-thumb" src="images/gotcha-thumb.webp" alt="Gotcha" loading="lazy">
           <div class="card-body">
             <p class="card-category">UX / UI Design</p><h3 class="card-title">Gotcha.</h3>
             <p class="card-desc">A 5-week UX sprint designing a web app for a bubble tea store — from guerilla research to a clickable Figma prototype.</p>
             <div class="card-tags"><span class="tag">Figma</span><span class="tag">Miro</span><span class="tag">Google Forms</span></div>
+          </div>
+        </a>
+
+
+        <a class="card reveal" data-category="animation" data-project="heir-of-hair" href="#" onclick="openProject('heir-of-hair');return false;">
+          <img class="card-thumb" src="images/heir-of-hair-thumb.webp" alt="Heir of Hair" loading="lazy">
+          <div class="card-body">
+            <p class="card-category">Animation</p><h3 class="card-title">Heir of Hair.</h3>
+            <p class="card-desc">A short storyboard and animatic for a hair styling machine — futuristic tech meets old school charm, with Disney-inspired exaggerated expressions.</p>
+            <div class="card-tags"><span class="tag">Storyboarding</span><span class="tag">Animatic</span><span class="tag">Character Design</span></div>
+          </div>
+        </a>
+
+        <a class="card reveal" data-category="animation" data-project="fractured" href="#" onclick="openProject('fractured');return false;">
+          <img class="card-thumb" src="images/fractured-thumb.webp" alt="Fractured" loading="lazy">
+          <div class="card-body">
+            <p class="card-category">Animation</p><h3 class="card-title">Fractured.</h3>
+            <p class="card-desc">A group animatic exploring a pay-to-win romance society — 424 frames of drawing, with colour as an extension of character emotion.</p>
+            <div class="card-tags"><span class="tag">Storyboarding</span><span class="tag">Animatic</span><span class="tag">Character Design</span><span class="tag">Colour Theory</span></div>
           </div>
         </a>
 
@@ -350,13 +399,9 @@ var projects = {
     category: '3D Art', title: 'Cosy<br><em>Room.</em>',
     tags: ['Maya','ZBrush','Crazy Bump','Quixel Mixer','Marvellous Designer','Marmoset Toolbag 4','Photoshop','Unreal Engine 5','Substance Sampler','Substance Painter'],
     meta: [{label:'Type',value:'Personal Project'},{label:'Engine',value:'Unreal Engine 5'},{label:'Focus',value:'Environment Art · Storytelling'}],
-    body: ["I was inspired to create a cosy nook from a photo I saw online. I used this project to challenge myself not only in using new software, but in my modelling and composition knowledge. A living space gave me an opportunity to indirectly personify a character through the visual storytelling of its props.","Each prop was created with game optimisation in mind, maximising polygon use without excess. Despite the number of assets, every single one was crafted with meticulous detail to create a holistically believable environment. If you look at this scene and wish you had a bed space like this — mission accomplished."],
+    body: ['I was inspired to create a cosy nook from a photo I saw online. I used this project to challenge myself not only in using new software, but in my modelling and composition knowledge. A living space gave me an opportunity to indirectly personify a character through the visual storytelling of its props.','Each prop was created with game optimisation in mind, maximising polygon use without excess. Despite the number of assets, every single one was crafted with meticulous detail to create a holistically believable environment. If you look at this scene and wish you had a bed space like this — mission accomplished.'],
     heroPair: ['cosy-room-hero-01.webp.webp','cosy-room-hero-02.webp.webp'],
-    comparePairs: [
-      {render:'cosy-room-render-01.webp.webp', wire:'cosy-room-wireframe-01.webp.webp'},
-      {render:'cosy-room-render-02.webp.webp', wire:'cosy-room-wireframe-02.webp.webp'},
-      {render:'cosy-room-render-03.webp.webp', wire:'cosy-room-wireframe-03.webp.webp'}
-    ],
+    comparePairs: [{render:'cosy-room-render-01.webp.webp',wire:'cosy-room-wireframe-01.webp.webp'},{render:'cosy-room-render-02.webp.webp',wire:'cosy-room-wireframe-02.webp.webp'},{render:'cosy-room-render-03.webp.webp',wire:'cosy-room-wireframe-03.webp.webp'}],
     images: ['cosy-room-01.webp.webp','cosy-room-02.webp.webp','cosy-room-03.webp.webp','cosy-room-04.webp.webp','cosy-room-05.webp.webp','cosy-room-06.webp.webp','cosy-room-07.webp.webp','cosy-room-08.webp.webp','cosy-room-09.webp.webp','cosy-room-10.webp.webp','cosy-room-11.webp.webp'],
     figma: null
   },
@@ -373,7 +418,7 @@ var projects = {
     category: '3D Art', title: 'Japanese<br><em>Alley Slice.</em>',
     tags: ['Maya','RenderMan','ZBrush','Quixel','Marvellous Designer','Photoshop'],
     meta: [{label:'Type',value:'Personal Project'},{label:'Software',value:'Maya · RenderMan · ZBrush'},{label:'Focus',value:'Environment Art · Set Dressing'}],
-    body: ["There was a conscious effort and focus on detail as the criteria for this project. A vertical slice of a Japanese alley was chosen for its density of content within a small space. A curated prop list was assembled from source material references, then the set was blocked out in Maya to establish key placement and set dressing.","This set was approached with a strong focus on individual components. Most models were referenced from real-life counterparts, with creativity expressed through the approach to texturing and faithful recreation. The result is a diorama that rewards close inspection."],
+    body: ['There was a conscious effort and focus on detail as the criteria for this project. A vertical slice of a Japanese alley was chosen for its density of content within a small space. A curated prop list was assembled from source material references, then the set was blocked out in Maya to establish key placement and set dressing.','This set was approached with a strong focus on individual components. Most models were referenced from real-life counterparts, with creativity expressed through the approach to texturing and faithful recreation. The result is a diorama that rewards close inspection.'],
     hero: 'japanese-alley-hero.webp.webp',
     images: ['japanese-alley-01.webp.webp','japanese-alley-02.webp.webp','japanese-alley-03.webp.webp','japanese-alley-04.webp.webp','japanese-alley-05.webp.webp','japanese-alley-06.webp.webp','japanese-alley-07.webp.webp','japanese-alley-08.webp.webp','japanese-alley-09.webp.webp','japanese-alley-10.webp.webp','japanese-alley-11.webp.webp','japanese-alley-12.webp.webp','japanese-alley-13.webp.webp'],
     figma: null
@@ -382,7 +427,7 @@ var projects = {
     category: '3D Art', title: 'Still<br><em>Life.</em>',
     tags: ['Maya','RenderMan','Quixel','Photoshop'],
     meta: [{label:'Type',value:'Personal Project'},{label:'Software',value:'Maya · RenderMan · Quixel'},{label:'Focus',value:'Hard Surface & Organic Modelling'}],
-    body: ['The idea of this project was to challenge myself in replicating a photo of objects. It was an opportunity to test my capabilities in modelling off references — I chose a variety of objects that would push my understanding of hard surface and organic modelling, along with their respective textures.',"All objects were modelled in Maya using subdiv modelling. Since they would be rendered for the final product, polycount wasn't a concern. Models were unwrapped in Maya and textured using a combination of Quixel textures and Photoshop-edited photos. Transparent and reflective materials were created using Pixar's RenderMan, which was also used for the final render."],
+    body: ['The idea of this project was to challenge myself in replicating a photo of objects. It was an opportunity to test my capabilities in modelling off references — I chose a variety of objects that would push my understanding of hard surface and organic modelling, along with their respective textures.','All objects were modelled in Maya using subdiv modelling. Since they would be rendered for the final product, polycount was not a concern. Models were unwrapped in Maya and textured using a combination of Quixel textures and Photoshop-edited photos. Transparent and reflective materials were created using Pixar\'s RenderMan, which was also used for the final render.'],
     hero: 'still-life-thumb-hero.webp.webp',
     images: ['still-life-01.webp.webp','still-life-02.webp.webp','still-life-03.webp.webp','still-life-04.webp.webp','still-life-05.webp.webp','still-life-07.webp.webp','still-life-08.webp.webp','still-life-09.webp.webp','still-life-12.webp.webp','still-life-13.webp.webp','still-life-14.webp.webp'],
     figma: null
@@ -391,9 +436,30 @@ var projects = {
     category: 'UX / UI Design', title: '<em>Gotcha.</em>',
     tags: ['Figma','Miro','Google Forms'],
     meta: [{label:'Type',value:'Personal Project'},{label:'Timeline',value:'5-Week Sprint (Apr–May 2022)'},{label:'Role',value:'Researcher · Product Designer'}],
-    body: ["As part of a personal project, I tackled a local bubble tea store to find ways to improve their foot traffic. M-City shoppers were unaware of Gotcha's upstairs location — competitors on the ground floor captured all convenience-driven purchases. The problem statement: bridge the inconvenience of ordering from Gotcha while making the menu accessible.","Research across 67 survey responses and 12 interviews revealed convenience drove 37% of purchase decisions. This led to pivoting from an app to a web app — no download or sign-in required — letting customers order ahead and collect at the escalator base. Testing reduced order time from 29 seconds to under 10 seconds with a repeat-order feature."],
+    body: ['As part of a personal project, I tackled a local bubble tea store to find ways to improve their foot traffic. M-City shoppers were unaware of Gotcha\'s upstairs location — competitors on the ground floor captured all convenience-driven purchases. The problem statement: bridge the inconvenience of ordering from Gotcha while making the menu accessible.','Research across 67 survey responses and 12 interviews revealed convenience drove 37% of purchase decisions. This led to pivoting from an app to a web app — no download or sign-in required — letting customers order ahead and collect at the escalator base. Testing reduced order time from 29 seconds to under 10 seconds with a repeat-order feature.'],
     hero: null, images: [],
     figma: 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FOee44ANZAacN49tSxq9Mr4%2FGotcha-Web-App%3Fnode-id%3D182%253A6455%26scaling%3Dscale-down%26page-id%3D182%253A5947%26starting-point-node-id%3D182%253A6455%26hide-ui=1'
+  },
+  'heir-of-hair': {
+    category: 'Animation', title: 'Heir of<br><em>Hair.</em>',
+    tags: ['Storyboarding','Animatic','Character Design'],
+    meta: [{label:'Type',value:'Personal Project'},{label:'Format',value:'Animatic'},{label:'Style',value:'Disney-inspired'}],
+    body: ['This was a project to create a short story board and animatic of an advertisement for a product. The product I decided to create was a hair styling machine, cause who would not want a personal hair stylist at home?','I wanted to create a dichotomy through the unique blend of futuristic tech utilizing old school tech. While the helmet is technically advanced, it is bogged down by the use of floppy disks and a not so portable design. For this art direction, I leaned heavily towards Disney\'s style of characters. I love the exaggerated expressions that Disney characters have, and because the animatic would not feature voices, I thought the facial expressions would be a good substitute.'],
+    youtube: 'https://www.youtube.com/embed/M9Luib38s2Y',
+    hero: null,
+    images: ['heir-of-hair-01.webp','heir-of-hair-02.webp','heir-of-hair-03.webp','heir-of-hair-04.webp','heir-of-hair-05.webp','heir-of-hair-06.webp'],
+    figma: null
+  },
+  'fractured': {
+    category: 'Animation', title: '<em>Fractured.</em>',
+    tags: ['Storyboarding','Animatic','Character Design','Colour Theory'],
+    meta: [{label:'Type',value:'Group Project'},{label:'Frames',value:'424 Drawings'},{label:'Format',value:'Animatic'}],
+    body: ['This was a group based project where we had to storyboard a short story and create an animatic as the final piece. I penned the idea of having a romance story based on microtransactions in games — how a society with pay-to-win relationships work, explored through the eyes of Faux.','For this project we used colours as an extension of the character\'s emotions, so their inner feelings are not just exclusively communicated through their face or body. The characters struck a nice balance between simplicity and detail, making the final animatic easier to produce. The final animatic resulted in 424 frames of drawing!'],
+    youtube: 'https://www.youtube.com/embed/rcP6mKszN9Y',
+    hero: null,
+    comparePairs: [{render:'fractured-reference-01.webp',wire:'fractured-rendered-01.webp'},{render:'fractured-reference-02.webp',wire:'fractured-rendered-02.webp'},{render:'fractured-reference-03.webp',wire:'fractured-rendered-03.webp'},{render:'fractured-reference-04.webp',wire:'fractured-rendered-04.webp'},{render:'fractured-reference-05.webp',wire:'fractured-rendered-05.webp'}],
+    images: ['fractured-01.webp','fractured-02.webp','fractured-03.webp','fractured-04.webp','fractured-05.webp','fractured-06.webp','fractured-07.webp','fractured-08.webp','fractured-09.webp','fractured-10.webp','fractured-11.webp'],
+    figma: null
   },
   'io-energy': { category:'UX / UI Design', title:'iO<br><em>Energy.</em>', tags:['Figma','Miro'], meta:[{label:'Type',value:'Personal Project'}], body:['App design for an energy management platform.'], hero:null, images:[], figma:null },
   'neko': { category:'Graphic Design', title:'Neko<br><em>Cat Hotel.</em>', tags:['Figma','Miro'], meta:[{label:'Type',value:'Personal Project'}], body:['Cat hotel booking experience design.'], hero:null, images:[], figma:null },
@@ -537,7 +603,7 @@ function getFilteredOrder() {
     ring.style.opacity='1';
     var isModal=document.getElementById('modal-overlay').classList.contains('open');
     var isLightbox=document.getElementById('lightbox').classList.contains('open');
-    if(isModal&&currentProjectId&&!isLightbox){
+    if(isModal&&currentProjectId&&!isLightbox&&!isVideoFullscreen()){
       var ratio=e.clientX/window.innerWidth;
       var order=getFilteredOrder();
       var oi=order.indexOf(currentProjectId);
@@ -561,6 +627,7 @@ function getFilteredOrder() {
 
   /* Edge zone clicks — attached to overlay so buttons still work normally */
   document.getElementById('modal-overlay').addEventListener('click',function(e){
+    if(isVideoFullscreen())return;
     if(e.target===this){
       var ratio=e.clientX/window.innerWidth;
       var order=getFilteredOrder();
@@ -670,12 +737,13 @@ function openProject(id) {
   /* Comparison slider HTML */
   var compareHtml='';
   if(p.comparePairs&&p.comparePairs.length){
-    compareHtml='<p class="embed-label">Render vs Wireframe</p>'+
+    var compareLabel = p.category==='Animation' ? '3D Mockup vs Final Frame' : 'Render vs Wireframe';
+    compareHtml='<p class="embed-label">'+compareLabel+'</p>'+
       '<div class="compare-section">'+
         '<div class="compare-wrap" id="compare-wrap">'+
-          '<img class="compare-base" src="images/'+p.comparePairs[0].render+'" alt="Render" id="compare-base">'+
+          '<img class="compare-base" src="images/'+p.comparePairs[0].render+'" alt="Before" id="compare-base">'+
           '<div class="compare-after" id="compare-after" style="width:50%">'+
-            '<img src="images/'+p.comparePairs[0].wire+'" alt="Wireframe" id="compare-top" style="height:100%;width:auto;">'+
+            '<img src="images/'+p.comparePairs[0].wire+'" alt="After" id="compare-top" style="height:100%;width:auto;">'+
           '</div>'+
           '<div class="compare-handle" id="compare-handle" style="left:50%">'+
             '<div class="compare-handle-line"></div>'+
@@ -712,6 +780,16 @@ function openProject(id) {
       '<p style="font-size:0.75rem;color:var(--ink-light);margin-bottom:2rem;">Hit R to restart on desktop.</p>';
   }
 
+  /* YouTube HTML */
+  var youtubeHtml='';
+  if(p.youtube){
+    youtubeHtml='<p class="embed-label">Watch the Animatic</p>'+
+      '<div class="yt-fs-wrap" id="yt-fs-wrap">'+
+        '<button class="yt-fs-btn" id="yt-fs-btn" onclick="toggleYTFS()">⛶ Fullscreen</button>'+
+        '<div class="yt-wrap"><iframe src="'+p.youtube+'?rel=0&modestbranding=1" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>'+
+      '</div>';
+  }
+
   document.getElementById('modal-content').innerHTML=
     '<div class="modal-nav">'+
       '<button class="modal-prev" onclick="openProject(\''+prevId+'\')">Prev project</button>'+
@@ -723,7 +801,7 @@ function openProject(id) {
     '<div class="modal-tags">'+tagsHtml+'</div>'+
     '<div class="modal-meta">'+metaHtml+'</div>'+
     '<div class="modal-body"><div>'+bodyHtml+'</div></div>'+
-    heroHtml+compareHtml+galleryHtml+figmaHtml;
+    heroHtml+compareHtml+youtubeHtml+galleryHtml+figmaHtml;
 
   /* Build lightbox image list */
   lbImages=[];
@@ -759,6 +837,21 @@ function openProject(id) {
   });
 }
 
+function toggleYTFS() {
+  var wrap=document.getElementById('yt-fs-wrap');
+  var btn=document.getElementById('yt-fs-btn');
+  if(!wrap)return;
+  var isFS=wrap.classList.toggle('fullscreen');
+  btn.textContent=isFS?'✕ Exit fullscreen':'⛶ Fullscreen';
+  document.body.style.overflow=isFS?'hidden':'';
+}
+
+function isVideoFullscreen() {
+  var yt=document.getElementById('yt-fs-wrap');
+  var fig=document.getElementById('figma-wrap');
+  return (yt&&yt.classList.contains('fullscreen'))||(fig&&fig.classList.contains('fullscreen'));
+}
+
 function toggleFigmaFS() {
   var wrap=document.getElementById('figma-wrap');
   var btn=document.getElementById('figma-fs-btn');
@@ -769,8 +862,10 @@ function toggleFigmaFS() {
 }
 
 function closeModal() {
-  var wrap=document.getElementById('figma-wrap');
-  if(wrap)wrap.classList.remove('fullscreen');
+  var figWrap=document.getElementById('figma-wrap');
+  if(figWrap)figWrap.classList.remove('fullscreen');
+  var ytWrap=document.getElementById('yt-fs-wrap');
+  if(ytWrap)ytWrap.classList.remove('fullscreen');
   document.getElementById('modal-overlay').classList.remove('open');
   document.body.style.overflow='';
   currentProjectId=null;
@@ -811,6 +906,15 @@ document.querySelectorAll('.filter-btn').forEach(function(btn){
     },280);
   });
 });
+
+/* ── SCROLL TO TOP ── */
+(function(){
+  var btn=document.getElementById('scroll-top');
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>400){btn.classList.add('visible');}
+    else{btn.classList.remove('visible');}
+  },{passive:true});
+})();
 
 /* ── SCROLL REVEAL ── */
 var ro=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
