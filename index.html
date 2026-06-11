@@ -326,7 +326,7 @@
           <div class="about-links">
             <a class="pill" href="mailto:matt.shujuku.yiu@gmail.com">Email me</a>
             <a class="pill" href="https://www.linkedin.com/in/matthew-yiu-676995152/" target="_blank" rel="noopener">LinkedIn</a>
-            <a class="pill" href="resume.pdf" download="Matt_Yiu_Resume.pdf">Download CV</a>
+            <a class="pill" href="Matt Yiu -  Resume.pdf" download="Matt Yiu - Resume.pdf">Download CV</a>
           </div>
         </div>
       </div>
@@ -536,7 +536,8 @@ function getFilteredOrder() {
     tx=e.clientX; ty=e.clientY;
     ring.style.opacity='1';
     var isModal=document.getElementById('modal-overlay').classList.contains('open');
-    if(isModal&&currentProjectId){
+    var isLightbox=document.getElementById('lightbox').classList.contains('open');
+    if(isModal&&currentProjectId&&!isLightbox){
       var ratio=e.clientX/window.innerWidth;
       var order=getFilteredOrder();
       var oi=order.indexOf(currentProjectId);
@@ -591,13 +592,22 @@ function openLightbox(i){
   lbIdx=i<0?0:i;
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow='hidden';
+  /* Hide cursor ring and pill while lightbox is open */
+  ring.style.opacity='0';
+  ring.classList.remove('pill-active');
+  ringText.textContent='';
+  pillActive=false;
   updateLightbox();
 }
 function updateLightbox(){
   document.getElementById('lb-img').src=lbImages[lbIdx]||'';
   document.getElementById('lb-counter').textContent=(lbIdx+1)+' / '+lbImages.length;
 }
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='hidden';}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='hidden'; /* modal still open */
+  ring.style.opacity='1'; /* restore ring */
+}
 document.getElementById('lb-close').addEventListener('click',closeLightbox);
 document.getElementById('lb-prev').addEventListener('click',function(){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;updateLightbox();});
 document.getElementById('lb-next').addEventListener('click',function(){lbIdx=(lbIdx+1)%lbImages.length;updateLightbox();});
